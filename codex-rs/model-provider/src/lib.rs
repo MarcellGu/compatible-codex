@@ -1,9 +1,21 @@
 mod amazon_bedrock;
+mod alternate_providers;
 mod auth;
 mod bearer_auth_provider;
 mod models_endpoint;
 mod provider;
 
+pub use alternate_providers::create_anthropic_provider_info;
+pub use alternate_providers::create_chat_completions_provider_info;
+pub use alternate_providers::convert_response_items_to_chat_messages;
+pub use alternate_providers::convert_response_items_to_anthropic_messages;
+pub use alternate_providers::convert_tools_to_chat_tools;
+pub use alternate_providers::convert_tools_to_anthropic_tools;
+pub use alternate_providers::is_anthropic_provider;
+pub use alternate_providers::is_chat_completions_provider;
+pub use alternate_providers::ANTHROPIC_PROVIDER_ID;
+pub use alternate_providers::ANTHROPIC_DEFAULT_BASE_URL;
+pub use alternate_providers::DEFAULT_ANTHROPIC_MAX_TOKENS;
 pub use auth::auth_provider_from_auth;
 pub use auth::unauthenticated_auth_provider;
 pub use bearer_auth_provider::BearerAuthProvider;
