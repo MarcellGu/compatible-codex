@@ -924,6 +924,7 @@ impl Session {
                     session_id,
                     thread_id,
                     installation_id.clone(),
+                    config.model_provider_id.clone(),
                     session_configuration.provider.clone(),
                     session_configuration.session_source.clone(),
                     config.model_verbosity,

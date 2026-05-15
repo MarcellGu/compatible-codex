@@ -3961,6 +3961,20 @@
             "responses"
           ],
           "type": "string"
+        },
+        {
+          "description": "The OpenAI-compatible Chat Completions API at `/v1/chat/completions`.",
+          "enum": [
+            "chat"
+          ],
+          "type": "string"
+        },
+        {
+          "description": "The Anthropic Messages API at `/v1/messages`.",
+          "enum": [
+            "anthropic"
+          ],
+          "type": "string"
         }
       ]
     },

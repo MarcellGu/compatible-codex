@@ -267,10 +267,20 @@ fn authorized_request(
 }
 
 fn build_reqwest_client() -> reqwest::Client {
-    build_reqwest_client_with_custom_ca(reqwest::Client::builder()).unwrap_or_else(|error| {
+    build_reqwest_client_with_custom_ca(reqwest_client_builder()).unwrap_or_else(|error| {
         tracing::warn!(error = %error, "failed to build OpenAI file upload client");
         reqwest::Client::new()
     })
+}
+
+#[cfg(not(test))]
+fn reqwest_client_builder() -> reqwest::ClientBuilder {
+    reqwest::Client::builder()
+}
+
+#[cfg(test)]
+fn reqwest_client_builder() -> reqwest::ClientBuilder {
+    reqwest::Client::builder().no_proxy()
 }
 
 #[cfg(test)]

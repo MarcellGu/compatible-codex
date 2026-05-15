@@ -173,6 +173,7 @@ mod state;
 mod tasks;
 mod user_shell_command;
 pub mod util;
+mod wire_api;
 
 pub use attestation::AttestationContext;
 pub use attestation::AttestationProvider;

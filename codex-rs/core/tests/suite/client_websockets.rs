@@ -2038,6 +2038,7 @@ async fn websocket_harness_with_provider_options(
         session_id,
         thread_id,
         /*installation_id*/ TEST_INSTALLATION_ID.to_string(),
+        /*provider_id*/ "openai".to_string(),
         provider.clone(),
         SessionSource::Exec,
         config.model_verbosity,

@@ -7,6 +7,7 @@ use codex_api::SharedAuthProvider;
 use codex_login::AuthManager;
 use codex_login::CodexAuth;
 use codex_model_provider_info::ModelProviderInfo;
+use codex_model_provider_info::WireApi;
 use codex_models_manager::manager::OpenAiModelsManager;
 use codex_models_manager::manager::SharedModelsManager;
 use codex_models_manager::manager::StaticModelsManager;
@@ -86,7 +87,14 @@ pub trait ModelProvider: fmt::Debug + Send + Sync {
 
     /// Returns the provider-owned capability upper bounds.
     fn capabilities(&self) -> ProviderCapabilities {
-        ProviderCapabilities::default()
+        match self.info().wire_api {
+            WireApi::Responses => ProviderCapabilities::default(),
+            WireApi::Chat | WireApi::Anthropic => ProviderCapabilities {
+                namespace_tools: false,
+                image_generation: false,
+                web_search: false,
+            },
+        }
     }
 
     /// Returns the preferred model used for automatic approval review.

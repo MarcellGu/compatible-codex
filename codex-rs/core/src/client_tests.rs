@@ -18,6 +18,7 @@ use codex_login::CodexAuth;
 use codex_model_provider::BearerAuthProvider;
 use codex_model_provider_info::CHATGPT_CODEX_BASE_URL;
 use codex_model_provider_info::ModelProviderInfo;
+use codex_model_provider_info::OPENAI_PROVIDER_ID;
 use codex_model_provider_info::WireApi;
 use codex_model_provider_info::create_oss_provider_with_base_url;
 use codex_otel::SessionTelemetry;
@@ -68,6 +69,7 @@ fn test_model_client(session_source: SessionSource) -> ModelClient {
         thread_id.into(),
         thread_id,
         /*installation_id*/ "11111111-1111-4111-8111-111111111111".to_string(),
+        /*provider_id*/ "test-provider".to_string(),
         provider,
         session_source,
         /*model_verbosity*/ None,
@@ -76,6 +78,48 @@ fn test_model_client(session_source: SessionSource) -> ModelClient {
         /*beta_features_header*/ None,
         /*attestation_provider*/ None,
     )
+}
+
+#[test]
+fn responses_websocket_enabled_requires_official_openai_provider() {
+    let mut provider =
+        create_oss_provider_with_base_url("https://example.com/v1", WireApi::Responses);
+    provider.supports_websockets = true;
+    let thread_id = ThreadId::new();
+    let client = ModelClient::new(
+        /*auth_manager*/ None,
+        thread_id.into(),
+        thread_id,
+        /*installation_id*/ "11111111-1111-4111-8111-111111111111".to_string(),
+        /*provider_id*/ "openai-compatible".to_string(),
+        provider,
+        SessionSource::Exec,
+        /*model_verbosity*/ None,
+        /*enable_request_compression*/ false,
+        /*include_timing_metrics*/ false,
+        /*beta_features_header*/ None,
+        /*attestation_provider*/ None,
+    );
+
+    assert!(!client.responses_websocket_enabled());
+
+    let thread_id = ThreadId::new();
+    let client = ModelClient::new(
+        /*auth_manager*/ None,
+        thread_id.into(),
+        thread_id,
+        /*installation_id*/ "11111111-1111-4111-8111-111111111111".to_string(),
+        /*provider_id*/ "openai".to_string(),
+        ModelProviderInfo::create_openai_provider(/*base_url*/ None),
+        SessionSource::Exec,
+        /*model_verbosity*/ None,
+        /*enable_request_compression*/ false,
+        /*include_timing_metrics*/ false,
+        /*beta_features_header*/ None,
+        /*attestation_provider*/ None,
+    );
+
+    assert!(client.responses_websocket_enabled());
 }
 
 fn test_model_info() -> ModelInfo {
@@ -513,11 +557,17 @@ fn model_client_with_counting_attestation(
             create_oss_provider_with_base_url("https://example.com/v1", WireApi::Responses),
         )
     };
+    let provider_id = if include_attestation {
+        OPENAI_PROVIDER_ID.to_string()
+    } else {
+        "openai-compatible".to_string()
+    };
     let model_client = ModelClient::new(
         auth_manager,
         SessionId::new(),
         ThreadId::new(),
         /*installation_id*/ "11111111-1111-4111-8111-111111111111".to_string(),
+        provider_id,
         provider,
         SessionSource::Exec,
         /*model_verbosity*/ None,

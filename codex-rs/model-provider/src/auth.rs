@@ -8,6 +8,7 @@ use codex_api::SharedAuthProvider;
 use codex_login::AuthManager;
 use codex_login::CodexAuth;
 use codex_model_provider_info::ModelProviderInfo;
+use codex_model_provider_info::WireApi;
 use http::HeaderMap;
 use http::HeaderValue;
 
@@ -62,6 +63,19 @@ pub fn unauthenticated_auth_provider() -> SharedAuthProvider {
     Arc::new(UnauthenticatedAuthProvider)
 }
 
+#[derive(Clone, Debug)]
+struct AnthropicApiKeyAuthProvider {
+    api_key: String,
+}
+
+impl AuthProvider for AnthropicApiKeyAuthProvider {
+    fn add_auth_headers(&self, headers: &mut HeaderMap) {
+        if let Ok(header) = HeaderValue::from_str(&self.api_key) {
+            let _ = headers.insert("x-api-key", header);
+        }
+    }
+}
+
 /// Returns the provider-scoped auth manager when this provider uses command-backed auth.
 ///
 /// Providers without custom auth continue using the caller-supplied base manager, when present.
@@ -79,6 +93,12 @@ pub(crate) fn resolve_provider_auth(
     auth: Option<&CodexAuth>,
     provider: &ModelProviderInfo,
 ) -> codex_protocol::error::Result<SharedAuthProvider> {
+    if matches!(provider.wire_api, WireApi::Anthropic)
+        && let Some(api_key) = provider.api_key()?
+    {
+        return Ok(Arc::new(AnthropicApiKeyAuthProvider { api_key }));
+    }
+
     if let Some(auth) = bearer_auth_for_provider(provider)? {
         return Ok(Arc::new(auth));
     }
