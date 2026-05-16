@@ -1,5 +1,13 @@
+# compatible-codex
+
+本项目用于让 Codex 兼容 OpenAI、Anthropic 等 Chat Completions API。
+
+> [!IMPORTANT]
+> 本项目已归档。原因：本项目的功能已被 CCX 完整替代，并且 CCX 提供非侵入式的替代方案。
+> 如果想要在 Codex 中使用其他模型，请使用 **CCX** 项目。
+
 <p align="center"><code>npm i -g @openai/codex</code><br />or <code>brew install --cask codex</code></p>
-<p align="center"><strong>Codex CLI</strong> is a coding agent from OpenAI that runs locally on your computer.
+<p align="center"><strong>compatible-codex</strong>用于让 Codex 兼容 OpenAI、Anthropic 等 Chat Completions API。</p>
 <p align="center">
   <img src="https://github.com/openai/codex/blob/main/.github/codex-cli-splash.png" alt="Codex CLI splash" width="80%" />
 </p>
